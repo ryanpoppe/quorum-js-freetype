@@ -28,7 +28,7 @@ int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontN
     }
 
     // Load font
-    error = FT_New_Face(ftLib, font.c_str(), 0, &ftFace);
+    error = FT_New_Face(library, font.c_str(), 0, &face);
     if (error == FT_Err_Unknown_File_Format) {
         std::cerr << "Font format is unsupported" << std::endl;
         return 1;
