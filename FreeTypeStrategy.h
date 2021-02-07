@@ -9,7 +9,7 @@ extern "C" {
     int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative(const std::string& font); //$quorum_text = function(fontName)
 
 
-    bool wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_IsFontAvailable(const std::string& font); //$quorum_text = function(fontName)
+    int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_IsFontAvailable(const std::string& font); //$quorum_text = function(fontName)
 
 
     void wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_SetSizeNative(int size); //$quorum_integer = function(size)

@@ -47,7 +47,7 @@ int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontN
     return 0;
 };
 
-bool wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_IsFontAvailable(const std::string& font) //$quorum_text = function(fontName)
+int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_IsFontAvailable(const std::string& font) //$quorum_text = function(fontName)
 {
     // NYI
     if (font == "Arial") {
