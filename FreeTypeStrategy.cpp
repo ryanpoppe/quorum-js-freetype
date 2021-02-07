@@ -12,6 +12,9 @@ FT_Library library;
 FT_Face* face;
 FT_Error error;
 
+const std::string FONT_PATH = "fonts/";
+const std::string TTF_FILE_EXTENSION = ".ttf";
+
 /*
 int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative() //$quorum_Libraries_System_File = function(file)
 {
@@ -22,13 +25,16 @@ int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontN
 int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative(const std::string& font) //$quorum_text = function(fontName)
 {
     // Make sure requested font is arial
-    if (font != "arial.ttf") {
+    if (font != "arial") {
         std::cerr << "Only the arial font face is supported at this time." << std::endl;
         return 1;
     }
 
+    // Add font path and file extension to font name
+    std::string fullPath = FONT_PATH + font + TTF_FILE_EXTENSION;
+
     // Load font
-    error = FT_New_Face(library, font.c_str(), 0, &face);
+    error = FT_New_Face(library, fullPath.c_str(), 0, &face);
     if (error == FT_Err_Unknown_File_Format) {
         std::cerr << "Font format is unsupported" << std::endl;
         return 1;
