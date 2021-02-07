@@ -21,6 +21,12 @@ int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontN
 
 int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative(const std::string& font) //$quorum_text = function(fontName)
 {
+    // Make sure requested font is arial
+    if (font != "arial.ttf") {
+        std::cerr << "Only the arial font face is supported at this time." << std::endl;
+        return 1;
+    }
+
     // Load font
     error = FT_New_Face(ftLib, font.c_str(), 0, &ftFace);
     if (error == FT_Err_Unknown_File_Format) {
