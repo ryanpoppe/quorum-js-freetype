@@ -1,4 +1,6 @@
 #include <string>
+#include <iostream>
+
 #include "FreeTypeStrategy.h"
 
 // EMSCRIPTEN WASM
@@ -34,7 +36,7 @@ int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontN
     std::string fullPath = FONT_PATH + font + TTF_FILE_EXTENSION;
 
     // Load font
-    error = FT_New_Face(library, fullPath.c_str(), 0, &face);
+    error = FT_New_Face(library, fullPath.c_str(), 0, face);
     if (error == FT_Err_Unknown_File_Format) {
         std::cerr << "Font format is unsupported" << std::endl;
         return 1;
@@ -99,7 +101,7 @@ wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetGlyphNativ
 void wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetKerning() //$quorum_text$quorum_text = function(currentCharacter, nextCharacter)
 {
     // NYI
-    return 0;
+    //return 0;
 };
 
 bool wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_FinishedLoading() // = function()
@@ -146,7 +148,7 @@ unsigned int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_
 void wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetAvailableFonts() // = function()
 {
     // NYI
-    return null;
+    //return null;
 };
 
 unsigned int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetMaximumAscent() // = function()
