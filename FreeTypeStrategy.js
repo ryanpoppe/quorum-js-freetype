@@ -20,7 +20,24 @@ function plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_()
     
     this.LoadFontNative$quorum_text = function(fontName) 
     {
-        // NYI
+        /*
+         * // Call C from JavaScript
+            var result = Module.ccall('int_sqrt', // name of C function
+            'number', // return type
+            ['number'], // argument types
+            [28]); // arguments
+        */
+
+        //LoadFontNativeC = Module.cwrap('wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative', 'number', ['string']);
+        var LoadFontNativeC = Module.ccall('wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative', 'number', ['string'], [1]);
+        LoadFontNativeC(fontName);
+
+        if (loadFontNativeC == 1) {
+            // error loading font
+            console.log('Error loading font.');
+        } else {
+            console.log('Font loaded succesfully.');
+        }
     };
     
     this.IsFontAvailable$quorum_text = function(fontName) 

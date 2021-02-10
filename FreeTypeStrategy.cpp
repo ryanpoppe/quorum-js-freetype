@@ -28,7 +28,10 @@ int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontN
 {
     // Make sure requested font is arial
     if (font != "Arial") {
-        std::cerr << "Only the arial font face is supported at this time." << std::endl;
+        EM_ASM({
+            console.log('Only the arial font face is supported at this time.');
+            });
+        //std::cerr << "Only the arial font face is supported at this time." << std::endl;
         return 1;
     }
 
@@ -38,11 +41,17 @@ int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontN
     // Load font
     error = FT_New_Face(library, fullPath.c_str(), 0, face);
     if (error == FT_Err_Unknown_File_Format) {
-        std::cerr << "Font format is unsupported" << std::endl;
+        EM_ASM({
+            console.log('Font format is unsupported');
+            });
+        //std::cerr << "Font format is unsupported" << std::endl;
         return 1;
     }
     else if (error) {
-        std::cerr << "Font file is missing or corrupted" << std::endl;
+        EM_ASM({
+            console.log('Font file is missing or corrupted');
+            });
+        //std::cerr << "Font file is missing or corrupted" << std::endl;
         return 1;
     }
 

@@ -6,6 +6,14 @@
 <body>
 	<h1>Quorum FreeType plug-in in JavaScript and webAssembly</h1>
 	<canvas id="canvas"></canvas>
+	<script type="text/javascript">
+		var Module = {
+			onRuntimeInitialized: function () {
+				Module._main();
+				console.log("wasm loaded. execute: main()");
+			}
+		};
+	</script>
 	<script type="application/javascript" src="load.js"></script>
 	<script type="application/javascript">
 		Module({
