@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Wasm example</title>
+</head>
+<body>
+    <script type="module">
+        import Module from './example.js'
+        Module().then(function (mymod) {
+            const int_sqrt = mymod.cwrap('int_sqrt', 'number', ['number']);
+            console.log(int_sqrt(64));
+        });
+    </script>
+</body>
+</html>
