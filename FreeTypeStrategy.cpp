@@ -12,10 +12,20 @@
 
 FT_Library library;
 FT_Face* face;
-FT_Error error;
+FT_Error error = 0;
 
 const std::string FONT_PATH = "fonts/";
 const std::string TTF_FILE_EXTENSION = ".ttf";
+
+int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_InitializeFreeType() {
+    // Initialize FreeType
+    error = FT_Init_FreeType(&library);
+    if (error) {
+        std::cerr << "Error initializing FreeType" << std::endl;
+    }
+
+    return error;
+}
 
 /*
 int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative() //$quorum_Libraries_System_File = function(file)
@@ -24,34 +34,37 @@ int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontN
 };
 */
 
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative(const std::string& font) //$quorum_text = function(fontName)
+int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative(char* font) //$quorum_text = function(fontName)
 {
     // Make sure requested font is arial
-    if (font != "Arial") {
-        EM_ASM({
-            console.log('Only the arial font face is supported at this time.');
-            });
-        //std::cerr << "Only the arial font face is supported at this time." << std::endl;
+    //if (font != "Arial") {
+    char arialFont[] = "Arial";
+    if (strcmp(font, arialFont) != 0) {
+        std::cerr << "Only the arial font face is supported at this time." << std::endl;
         return 1;
     }
-
+    else {
+        std::cerr << "'Arial' passed to LoadFontNative." << std::endl;
+    }
     // Add font path and file extension to font name
-    std::string fullPath = FONT_PATH + font + TTF_FILE_EXTENSION;
-
+    //std::string fullPath = FONT_PATH + font + TTF_FILE_EXTENSION;
+    std::string fullPath = FONT_PATH + "Arial" + TTF_FILE_EXTENSION;
+    //std::string fullPath = "fonts/Arial.ttf";
+    //std::cerr << fullPath << std::endl;
     // Load font
     error = FT_New_Face(library, fullPath.c_str(), 0, face);
     if (error == FT_Err_Unknown_File_Format) {
-        EM_ASM({
-            console.log('Font format is unsupported');
-            });
-        //std::cerr << "Font format is unsupported" << std::endl;
+        //EM_ASM({
+        //    console.log('Font format is unsupported');
+        //    });
+        std::cerr << "Font format is unsupported" << std::endl;
         return 1;
     }
     else if (error) {
-        EM_ASM({
-            console.log('Font file is missing or corrupted');
-            });
-        //std::cerr << "Font file is missing or corrupted" << std::endl;
+        //EM_ASM({
+        //   console.log('Font file is missing or corrupted');
+        //    });
+        std::cerr << "Font file is missing or corrupted" << std::endl;
         return 1;
     }
 
@@ -179,9 +192,5 @@ unsigned int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_
 };
 
 int main() {
-    // Initialize FreeType
-    error = FT_Init_FreeType(&library);
-    if (error) {
-        std::cerr << "Error initializing FreeType" << std::endl;
-    }
+    return wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_InitializeFreeType();
 }

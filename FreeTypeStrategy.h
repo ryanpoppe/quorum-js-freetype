@@ -2,11 +2,12 @@
 
 extern "C" {
 
+    int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_InitializeFreeType();
 
     //int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative(); //$quorum_Libraries_System_File = function(file)
 
 
-    int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative(const std::string& font); //$quorum_text = function(fontName)
+    int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative(char* font); //$quorum_text = function(fontName)
 
 
     int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_IsFontAvailable(const std::string& font); //$quorum_text = function(fontName)
