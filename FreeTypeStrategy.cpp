@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-
+#include <cstdint>
 #include "FreeTypeStrategy.h"
 
 // EMSCRIPTEN WASM
@@ -186,12 +186,54 @@ int loadChar(char* symbol)
         return 0;
     }
 }
-
+/*
 int getBitmap(unsigned char* buf)
 {
-    buf = glyph->bitmap.buffer;
+    //buf = glyph->bitmap.buffer;
+    int size = glyph->bitmap.rows * glyph->bitmap.pitch;
+    unsigned char* test = new unsigned char[size];
+        for (int i = 0; i < size; i++)
+            test[i] = i;
+    buf = test;
+    int k = 0;
+    for (int i = 0; i < glyph->bitmap.rows; i++) {
+        for (int j = 0; j < glyph->bitmap.pitch; j++) {
+            std::cerr << (int)buf[k++] << " ";
+        }
+        std::cerr << std::endl;
+    }
 
     return 0;
+}
+*/
+
+//void write_data(unsigned int output_ptr, int num_bytes) {
+void getBitmap(unsigned int output_ptr, int num_bytes) {
+    // Get FreeType bitmap buffer
+    unsigned char* buf = glyph->bitmap.buffer;
+    // Set output pointer
+    uint8_t* dst = (uint8_t*)output_ptr;
+    // Write data to output
+    for (int i = 0; i < num_bytes; i++) {
+        dst[i] = (uint8_t)buf[i];
+        std::cerr << (int)buf[i] << " ";
+    }
+    std::cerr << std::endl;
+}
+/*
+int getBitmap(int* bitmapBuffer)
+{
+    unsigned char* buf = glyph->bitmap.buffer;
+    int size = glyph->bitmap.rows * glyph->bitmap.pitch;
+    for (int i = 0; i < size; i++) {
+        bitmapBuffer[i] = (int)buf[i];
+    }
+
+    return 0;
+}
+*/
+unsigned char* getBitmapBuffer() {
+    return glyph->bitmap.buffer;
 }
 
 int getBitmapData(long* bitmapData)
@@ -203,6 +245,8 @@ int getBitmapData(long* bitmapData)
     bitmapData[4] = glyph->advance.x;
     bitmapData[5] = glyph->advance.y;
     bitmapData[6] = glyph->bitmap.pitch;
+
+    std::cerr << "WASM - Left: " << bitmapData[0] << " Top: " << bitmapData[1] << " Rows: " << bitmapData[2] << " Width: " << bitmapData[3] << " X: " << bitmapData[4] << " Y: " << bitmapData[5] << " Pitch: " << bitmapData[6] << std::endl;
     
     return 0;
 }

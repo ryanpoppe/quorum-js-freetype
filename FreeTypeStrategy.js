@@ -89,6 +89,7 @@ function plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_() {
 
         // Create data array for glyph metrics (7 * 4 bytes = 28 bytes)
         var offset = Module._malloc(28);
+        console.log(offset);
 
         // Setup call to getBitmapData from WASM module
         var getBitmapData = Module.cwrap('getBitmapData', 'number', ['number']);
@@ -106,7 +107,9 @@ function plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_() {
         bitmapData[5] = Module.getValue(offset + 20, 'i32'); //glyph->advance.y;
         bitmapData[6] = Module.getValue(offset + 24, 'i32'); //glyph->bitmap.pitch;
 
-        // Free WASM dynamic memory allocation
+        console.log(" JS  - Left: " + bitmapData[0] + " Top: " + bitmapData[1] + " Rows: " + bitmapData[2] + " Width: " + bitmapData[3] + " X: " + bitmapData[4] + " Y: " + bitmapData[5] + " Pitch: " + bitmapData[6]);
+
+        // Free allocated memory
         Module._free(offset);
 
         // Calculate size of byte array for bitmap pixel buffer
@@ -116,25 +119,43 @@ function plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_() {
             size = -size;
         size *= bitmapData[2];
 
-        // Create data array for glyph bitmap buffer using 'size'
-        var buf = Module._malloc(size);
+        // Allocate memory on Emscripten heap
+        let num_bytes = size;
+        let dataPtr = Module._malloc(num_bytes);
+        let dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, num_bytes);
+        console.log('Allocated memory on heap.');
 
-        // Setup call to getBitmap from WASM module
-        var getBitmap = Module.cwrap('getBitmap', 'number', ['number']);
+        // Call WASM function
+        console.log('Calling WASM function "getBitmap"...');
+        var getBitmap = Module.cwrap('getBitmap', null, ['number', 'number']);
+        getBitmap(dataHeap.byteOffset, num_bytes);
 
-        // Pass array pointer to getBitmap
-        getBitmap(buf);
+        // Get data from Emscripten heap
+        let bitmapBuffer = new Uint8Array(dataHeap.buffer, dataHeap.byteOffset, num_bytes);
+        console.log('out_data: ' + bitmapBuffer[0] + ', ' + bitmapBuffer[1] + ', ..., ' + bitmapBuffer[size - 1]);
+        console.log(bitmapBuffer);
 
-        // Create array and copy bitmap buffer into it
-        var bitmapBuffer = [];
-        var i;
-        for (i = 0; i < size; i++) {
-            bitmapBuffer[i] = Module.getValue(buf, 'i8');
-        }
+        // Free allocated memory
+        Module._free(dataHeap.byteOffset);
 
-        // Free WASM dynamic memory allocation
-        Module._free(buf);
+        // Create Alpha pixel map
+        var pixmap = new quorum_Libraries_Game_Graphics_PixelMap_();
+        var map = pixmap.plugin_;
+        map.format = 1; // FORMAT_ALPHA
+        map.width = bitmapData[3]; // glyph->bitmap.width
+        map.height = bitmapData[2]; // glyph->bitmap.rows
+        map.pixels = bitmapBuffer; // glyph->bitmap.buffer
 
+        // Create texture
+
+
+        // Create color
+
+
+        // Create texture region
+
+
+        // Create glyph
         var glyph = new quorum_Libraries_Game_Graphics_Glyph_();
         glyph.Set_Libraries_Game_Graphics_Glyph__texture_(plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_.testDrawable);
         glyph.Set_Libraries_Game_Graphics_Glyph__horizontalAdvance_(8);

@@ -69,11 +69,16 @@ extern "C" {
 
     int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetLineGap(); // = function()
 
-    int getBitmap(unsigned char* buf);
+    //int getBitmap(unsigned char* buf);
+    //int getBitmap(int* bitmapBuffer);
+    void getBitmap(unsigned int output_ptr, int num_bytes);
 
     int getBitmapData(long* bitmapData);
 
     int loadChar(char* symbol);
- 
+
+    unsigned char* getBitmapBuffer();
+
+    //void write_data(unsigned int output_ptr, int num_bytes);
 }
 
