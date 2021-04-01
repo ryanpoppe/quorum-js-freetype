@@ -75,9 +75,10 @@ function plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_() {
 
     this.GetGlyphNative$quorum_text = function (character) {
         console.log('GetGlyphNative$quorum_text = function(' + character + ')');
+        // Create glyph
+        var glyph = new quorum_Libraries_Game_Graphics_Glyph_();
 
-
-        // Load character into glyph
+        // Load character into FreeType
         var loadChar = Module.cwrap('loadChar', 'number', ['string']);
         var loadCharResult = loadChar(character);
         if (loadCharResult == 1) {
@@ -138,33 +139,43 @@ function plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_() {
         // Free allocated memory
         Module._free(dataHeap.byteOffset);
 
-        // Create Alpha pixel map
-        var pixmap = new quorum_Libraries_Game_Graphics_PixelMap_();
-        var map = pixmap.plugin_;
-        map.format = 1; // FORMAT_ALPHA
-        map.width = bitmapData[3]; // glyph->bitmap.width
-        map.height = bitmapData[2]; // glyph->bitmap.rows
-        map.pixels = bitmapBuffer; // glyph->bitmap.buffer
+        if (character != ' ') {
+            // Create Alpha pixel map
+            var pixmap = new quorum_Libraries_Game_Graphics_PixelMap_();
+            var map = pixmap.plugin_;
+            map.format = 1; // FORMAT_ALPHA
+            map.width = bitmapData[3]; // glyph->bitmap.width
+            map.height = bitmapData[2]; // glyph->bitmap.rows
+            map.pixels = bitmapBuffer; // glyph->bitmap.buffer
 
-        // Create texture
+            // Create File texture data
+            var texData = new quorum_Libraries_Game_Graphics_FileTextureData_();
+            texData.InitializeFileTextureData$quorum_Libraries_System_File$quorum_Libraries_Game_Graphics_PixelMap$quorum_Libraries_Game_Graphics_Format$quorum_boolean(null, pixmap, null, false);
+            //texData.SetDisposalState(false);
 
+            // Create texture
+            var texture = new quorum_Libraries_Game_Graphics_Texture_();
+            texture.LoadFromTextureData$quorum_Libraries_Game_Graphics_TextureData(texData);
 
-        // Create color
+            // Create color
+            var c = new quorum_Libraries_Game_Graphics_Color_();
+            c.SetColor$quorum_number$quorum_number$quorum_number$quorum_number(color.GetRed(), color.GetGreen(), color.GetBlue(), color.GetAlpha());
+            texture.plugin_.fontColor = c;
 
+            // Create texture region
+            var region = new quorum_Libraries_Game_Graphics_TextureRegion_();
+            region.LoadTextureRegion$quorum_Libraries_Game_Graphics_Texture(texture);
 
-        // Create texture region
+            glyph.texture = region;
+        } else {
+            glyph.texture = null;
+        }
 
-
-        // Create glyph
-        var glyph = new quorum_Libraries_Game_Graphics_Glyph_();
-        glyph.Set_Libraries_Game_Graphics_Glyph__texture_(plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_.testDrawable);
-        glyph.Set_Libraries_Game_Graphics_Glyph__horizontalAdvance_(8);
-        glyph.Set_Libraries_Game_Graphics_Glyph__verticalAdvance_(0);
-        glyph.Set_Libraries_Game_Graphics_Glyph__lengthToGlyph_(0);
-        glyph.Set_Libraries_Game_Graphics_Glyph__heightFromBaseLine_(0);
-
-
-
+        //glyph.Set_Libraries_Game_Graphics_Glyph__texture_(plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_.testDrawable);
+        glyph.Set_Libraries_Game_Graphics_Glyph__horizontalAdvance_(bitmapData[4] >> 6);
+        glyph.Set_Libraries_Game_Graphics_Glyph__verticalAdvance_(bitmapData[5] >> 6);
+        glyph.Set_Libraries_Game_Graphics_Glyph__lengthToGlyph_(bitmapData[0]);
+        glyph.Set_Libraries_Game_Graphics_Glyph__heightFromBaseLine_(bitmapData[1]);
 
         return glyph;
     };
