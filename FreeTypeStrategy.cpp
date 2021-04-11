@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <cstdint>
+#include "math.h"
 #include "FreeTypeStrategy.h"
 
 // EMSCRIPTEN WASM
@@ -18,7 +19,7 @@ FT_GlyphSlot glyph;
 //const std::string FONT_PATH = "fonts/";
 //const std::string TTF_FILE_EXTENSION = ".ttf";
 
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_InitializeFreeType() {
+int InitializeFreeTypeC() {
     // Initialize FreeType
     error = FT_Init_FreeType(&library);
     if (error) {
@@ -28,7 +29,7 @@ int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_Initializ
     return error;
 }
 
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontNative(char* font) //$quorum_text = function(fontName)
+int LoadFontC(char* font) //$quorum_text = function(fontName)
 {
     // Make sure requested font is arial
     //if (font != "Arial") {
@@ -52,125 +53,84 @@ int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadFontN
         return 1;
     }
 
-    wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_SetSizeNative(12); // temporary, but needed to render glyph
+    SetSizeC(36); // temporary, but needed to render glyph
     return 0;
 }
 
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_IsFontAvailable(char* font) //$quorum_text = function(fontName)
+int IsFontAvailableC(char* font) //$quorum_text = function(fontName)
 {
-    char arialFont[] = "Arial";
+    char arialFont[] = "Arial"; // Only using Arial right now...
     return strcmp(font, arialFont); // Return 1 (True) if font == 'Arial'
 }
 
-void wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_SetSizeNative(int size) //$quorum_integer = function(size)
+void SetSizeC(int size) //$quorum_integer = function(size)
 {
     error = FT_Set_Char_Size(face, size << 6, 0, 72, 0);
 }
 
-void wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_SetAngleNative(int angle) //$quorum_number = function(angle)
+void SetAngleC(int angle) //$quorum_number = function(angle)
 {
-    // NYI
+    FT_Matrix matrix;
+
+    matrix.xx = (FT_Fixed)(cos(angle) * 0x10000L);
+    matrix.xy = (FT_Fixed)(-sin(angle) * 0x10000L);
+    matrix.yx = (FT_Fixed)(sin(angle) * 0x10000L);
+    matrix.yy = (FT_Fixed)(cos(angle) * 0x10000L);
+
+    FT_Set_Transform(face, &matrix, 0);
 }
 
-void wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_SetColorNative() //$quorum_Libraries_Game_Graphics_Color = function(newColor)
-{
-    //color = newColor;
-}
 
-void wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetColor() // = function()
-{
-    //return color;
-}
-
-void wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_DisposeNative() // = function()
+void DisposeC() // = function()
 {
     FT_Done_Face(face);
 }
 
-
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetGlyphNative(char* character)
+int GetKerningC(char* current, char* next) //$quorum_text$quorum_text = function(currentCharacter, nextCharacter)
 {
-    /*
-    var glyph = new quorum_Libraries_Game_Graphics_Glyph_();
-    glyph.Set_Libraries_Game_Graphics_Glyph__texture_(plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_.testDrawable);
-    glyph.Set_Libraries_Game_Graphics_Glyph__horizontalAdvance_(8);
-    glyph.Set_Libraries_Game_Graphics_Glyph__verticalAdvance_(0);
-    glyph.Set_Libraries_Game_Graphics_Glyph__lengthToGlyph_(0);
-    glyph.Set_Libraries_Game_Graphics_Glyph__heightFromBaseLine_(0);
-    return glyph;
-    */
+    if (FT_HAS_KERNING(face)) {
+        FT_Vector delta;
+        FT_UInt current_index = FT_Get_Char_Index(face, current[0]);
+        FT_UInt next_index = FT_Get_Char_Index(face, next[0]);
+        FT_Get_Kerning(face, current_index, next_index,
+            FT_KERNING_DEFAULT, &delta);
+        return (int)(delta.x >> 6);
+    } else
+        return 0;
 }
 
-
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetKerning() //$quorum_text$quorum_text = function(currentCharacter, nextCharacter)
-{
-    // NYI
-    return 0;
-}
-
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_FinishedLoading() // = function()
-{
-    return 1;
-}
-
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_LoadImageSheet() //$Libraries_Game_Graphics_Fonts_FontImageSheet = function(imageSheet)
-{
-    return 0;
-}
-
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_SystemGetHeight() // = function()
-{
-    // NYI
-}
-
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_SystemGetMaximumAscent() // = function()
-{
-    // NYI
-}
-
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_SystemGetMaximumDescent() // = function()
-{
-    // NYI
-}
-
-long wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_SystemGetUnderlinePosition() // = function()
+long GetUnderlinePositionC() // = function()
 {
     return FT_MulFix(face->underline_position, face->size->metrics.y_scale);
 }
 
-long wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_SystemGetUnderlineThickness() // = function()
+long GetUnderlineThicknessC() // = function()
 {
     return FT_MulFix(face->underline_thickness, face->size->metrics.y_scale);
 }
 
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetLineHeight() // = function()
+int GetLineHeightC() // = function()
 {
     return face->size->metrics.height;
 }
 
-void wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetAvailableFonts() // = function()
+void GetAvailableFontsC() // = function()
 {
     // NYI
     //return null;
 }
 
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetMaximumAscent() // = function()
+int GetMaximumAscentC() // = function()
 {
     return face->size->metrics.ascender;
 }
 
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetMaximumDescent() // = function()
+int GetMaximumDescentC() // = function()
 {
     return face->size->metrics.descender;
 }
 
-int wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_GetLineGap() // = function()
-{
-    // NYI
-    return 0;
-}
-
-int loadChar(char* symbol)
+int loadCharC(char* symbol)
 {
     char sym = *symbol;
     std::cerr << "Loading glyph:" << sym << std::endl;
@@ -186,29 +146,8 @@ int loadChar(char* symbol)
         return 0;
     }
 }
-/*
-int getBitmap(unsigned char* buf)
-{
-    //buf = glyph->bitmap.buffer;
-    int size = glyph->bitmap.rows * glyph->bitmap.pitch;
-    unsigned char* test = new unsigned char[size];
-        for (int i = 0; i < size; i++)
-            test[i] = i;
-    buf = test;
-    int k = 0;
-    for (int i = 0; i < glyph->bitmap.rows; i++) {
-        for (int j = 0; j < glyph->bitmap.pitch; j++) {
-            std::cerr << (int)buf[k++] << " ";
-        }
-        std::cerr << std::endl;
-    }
 
-    return 0;
-}
-*/
-
-//void write_data(unsigned int output_ptr, int num_bytes) {
-void getBitmap(unsigned int output_ptr, int num_bytes) {
+void getBitmapC(unsigned int output_ptr, int num_bytes) {
     // Get FreeType bitmap buffer
     unsigned char* buf = glyph->bitmap.buffer;
     // Set output pointer
@@ -220,23 +159,8 @@ void getBitmap(unsigned int output_ptr, int num_bytes) {
     }
     std::cerr << std::endl;
 }
-/*
-int getBitmap(int* bitmapBuffer)
-{
-    unsigned char* buf = glyph->bitmap.buffer;
-    int size = glyph->bitmap.rows * glyph->bitmap.pitch;
-    for (int i = 0; i < size; i++) {
-        bitmapBuffer[i] = (int)buf[i];
-    }
 
-    return 0;
-}
-*/
-unsigned char* getBitmapBuffer() {
-    return glyph->bitmap.buffer;
-}
-
-int getBitmapData(long* bitmapData)
+int getBitmapDataC(long* bitmapData)
 {
     bitmapData[0] = glyph->bitmap_left;
     bitmapData[1] = glyph->bitmap_top;
@@ -252,5 +176,5 @@ int getBitmapData(long* bitmapData)
 }
 
 int main() {
-    return wasm_plugins_quorum_Libraries_Game_Graphics_Fonts_FreeTypeStrategy_InitializeFreeType();
+    return InitializeFreeTypeC();
 }
