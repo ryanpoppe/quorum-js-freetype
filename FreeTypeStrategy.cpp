@@ -53,7 +53,7 @@ int LoadFontC(char* font) //$quorum_text = function(fontName)
         return 1;
     }
 
-    SetSizeC(36); // temporary, but needed to render glyph
+    //SetSizeC(36); // temporary, but needed to render glyph
     return 0;
 }
 
@@ -68,8 +68,9 @@ void SetSizeC(int size) //$quorum_integer = function(size)
     error = FT_Set_Char_Size(face, size << 6, 0, 72, 0);
 }
 
-void SetAngleC(int angle) //$quorum_number = function(angle)
+void SetAngleC(double angle) //$quorum_number = function(angle)
 {
+    std::cerr << "Angle: " << angle << std::endl;
     FT_Matrix matrix;
 
     matrix.xx = (FT_Fixed)(cos(angle) * 0x10000L);

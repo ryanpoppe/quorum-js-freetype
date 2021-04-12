@@ -14,7 +14,7 @@ extern "C" {
     void SetSizeC(int size); //$quorum_integer = function(size)
 
 
-    void SetAngleC(int angle); //$quorum_number = function(angle)
+    void SetAngleC(double angle); //$quorum_number = function(angle)
 
 
     void DisposeC(); // = function()
