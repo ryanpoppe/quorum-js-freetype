@@ -1,5 +1,3 @@
-#include <string>
-
 extern "C" {
 
     int InitializeFreeTypeC();
@@ -30,9 +28,6 @@ extern "C" {
 
 
     int GetLineHeightC(); // = function()
-
-
-    void GetAvailableFontsC(); // = function()
 
 
     int GetMaximumAscentC(); // = function()
