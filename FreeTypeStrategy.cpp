@@ -39,7 +39,7 @@ int LoadFontC(char* font) //$quorum_text = function(fontName)
         return 1;
     }
     else {
-        std::cerr << "'Arial' passed to LoadFontNative." << std::endl;
+        //std::cerr << "'Arial' passed to LoadFontNative." << std::endl;
     }
 
     // Load font
@@ -70,7 +70,7 @@ void SetSizeC(int size) //$quorum_integer = function(size)
 
 void SetAngleC(double angle) //$quorum_number = function(angle)
 {
-    std::cerr << "Angle: " << angle << std::endl;
+    //std::cerr << "Angle: " << angle << std::endl;
     FT_Matrix matrix;
 
     matrix.xx = (FT_Fixed)(cos(angle) * 0x10000L);
@@ -154,14 +154,14 @@ void getBitmapC(unsigned int output_ptr, int num_bytes) {
     // Set output pointer
     uint8_t* dst = (uint8_t*)output_ptr;
     // Write data to output
-    for (int i = 0; i < num_bytes; i++) {
-        dst[i] = (uint8_t)buf[i];
-        std::cerr << (int)buf[i] << " ";
-    }
-    std::cerr << std::endl;
+    //for (int i = 0; i < num_bytes; i++) {
+    //    dst[i] = (uint8_t)buf[i];
+    //    std::cerr << (int)buf[i] << " ";
+    //}
+    //std::cerr << std::endl;
 }
 
-int getBitmapDataC(long* bitmapData)
+int getBitmapDataC(int* bitmapData)
 {
     bitmapData[0] = glyph->bitmap_left;
     bitmapData[1] = glyph->bitmap_top;
@@ -171,7 +171,7 @@ int getBitmapDataC(long* bitmapData)
     bitmapData[5] = glyph->advance.y;
     bitmapData[6] = glyph->bitmap.pitch;
 
-    std::cerr << "WASM - Left: " << bitmapData[0] << " Top: " << bitmapData[1] << " Rows: " << bitmapData[2] << " Width: " << bitmapData[3] << " X: " << bitmapData[4] << " Y: " << bitmapData[5] << " Pitch: " << bitmapData[6] << std::endl;
+    //std::cerr << "WASM - Left: " << bitmapData[0] << " Top: " << bitmapData[1] << " Rows: " << bitmapData[2] << " Width: " << bitmapData[3] << " X: " << bitmapData[4] << " Y: " << bitmapData[5] << " Pitch: " << bitmapData[6] << std::endl;
     
     return 0;
 }

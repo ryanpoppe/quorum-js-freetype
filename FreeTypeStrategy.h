@@ -47,7 +47,7 @@ extern "C" {
     void getBitmapC(unsigned int output_ptr, int num_bytes);
 
 
-    int getBitmapDataC(long* bitmapData);
+    int getBitmapDataC(int* bitmapData);
 
 
     int loadCharC(char* symbol);
